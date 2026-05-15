@@ -1,0 +1,18 @@
+# Sample nginx reverse-proxy block for quiz-challenge.pagefly.io.
+# This mirrors the config already deployed at /etc/nginx/conf.d/quiz-challenge.conf
+# on the VPS. After running `certbot --nginx -d quiz-challenge.pagefly.io`,
+# certbot will edit this file to add the SSL server block and HTTP→HTTPS redirect.
+
+server {
+    listen 80;
+    server_name quiz-challenge.pagefly.io;
+
+    location / {
+        proxy_pass         http://127.0.0.1:3001;
+        proxy_http_version 1.1;
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+    }
+}

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PageFly Quiz Challenge — Win 20% off</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <script>
+    window.__QUIZ__ = {
+      sid: <%- JSON.stringify(sid) %>,
+      total: <%- JSON.stringify(total) %>,
+      firstQuestion: <%- JSON.stringify(firstQuestion) %>,
+      firstIndex: <%- JSON.stringify(firstIndex) %>,
+      alreadyClaimed: <%- JSON.stringify(alreadyClaimed) %>,
+      discountCode: <%- JSON.stringify(discountCode) %>,
+      shopifyAdminUrl: <%- JSON.stringify(shopifyAdminUrl) %>,
+      timePerQuestion: 20
+    };
+  </script>
+</head>
+<body class="min-h-screen">
+  <header class="border-b border-slate-100">
+    <div class="max-w-2xl mx-auto px-6 py-4 flex items-center justify-between">
+      <span class="brand-wordmark text-xl">PageFly</span>
+      <span id="progress" class="progress-chip" style="display:none"></span>
+    </div>
+  </header>
+
+  <main class="max-w-2xl mx-auto px-6 py-10">
+    <div id="intro" class="text-center mb-8">
+      <h1 class="text-3xl sm:text-4xl font-bold mb-3 tracking-tight">PageFly Quiz Challenge</h1>
+      <p class="text-slate-600">Answer 5 questions correctly to unlock a <span class="font-semibold" style="color:#4a4cf6">20% discount</span>. You have <span class="font-semibold">20 seconds</span> per question.</p>
+    </div>
+
+    <section id="quiz-card" class="card p-6 sm:p-8"></section>
+  </main>
+
+  <script src="/js/quiz.js"></script>
+</body>
+</html>

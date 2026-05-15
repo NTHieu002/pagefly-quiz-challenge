@@ -1,0 +1,57 @@
+[
+  {
+    "id": 1,
+    "question": "What is PageFly primarily used for?",
+    "options": [
+      "Email marketing",
+      "Building custom Shopify store pages without code",
+      "Inventory management",
+      "Shipping calculation"
+    ],
+    "correctIndex": 1
+  },
+  {
+    "id": 2,
+    "question": "Which Shopify plans is PageFly compatible with?",
+    "options": [
+      "Only Shopify Plus",
+      "Only Basic Shopify",
+      "All Shopify plans",
+      "Only Advanced Shopify"
+    ],
+    "correctIndex": 2
+  },
+  {
+    "id": 3,
+    "question": "Which of these can you build with PageFly?",
+    "options": [
+      "Only product pages",
+      "Only landing pages",
+      "Only blog posts",
+      "Home, product, collection, landing, blog, and more"
+    ],
+    "correctIndex": 3
+  },
+  {
+    "id": 4,
+    "question": "Does PageFly require coding skills?",
+    "options": [
+      "Yes, you need to know Liquid",
+      "Yes, you need React knowledge",
+      "No, it's a drag-and-drop visual editor",
+      "Only for advanced features"
+    ],
+    "correctIndex": 2
+  },
+  {
+    "id": 5,
+    "question": "Which of these is a PageFly feature?",
+    "options": [
+      "A/B testing for pages, Smart Pages, AI builder",
+      "Sending email campaigns",
+      "Managing physical inventory",
+      "Processing refunds"
+    ],
+    "correctIndex": 0
+  }
+]
