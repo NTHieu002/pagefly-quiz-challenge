@@ -146,7 +146,7 @@
       if (feedback) feedback.innerHTML = '<span style="color:var(--pf-success)">Correct!</span>';
 
       if (data.completed) {
-        setTimeout(() => renderSuccess(data.discountCode), 800);
+        setTimeout(() => renderSuccess(data.discountCode, data.discountLabel), 800);
         return;
       }
 
@@ -203,7 +203,8 @@
     document.getElementById('refresh-btn').addEventListener('click', () => location.reload());
   }
 
-  function renderSuccess(code) {
+  function renderSuccess(code, label) {
+    const rewardLabel = label || state.discountLabel || '20% off';
     stopTimer();
     if (intro) intro.style.display = 'none';
     setProgress(null);
@@ -211,9 +212,9 @@
       <div class="fade-in text-center py-6">
         <div class="text-5xl mb-3 pulse-once">🎉</div>
         <h2 class="text-2xl sm:text-3xl font-bold mb-2 tracking-tight">You did it!</h2>
-        <p class="text-slate-600 mb-6">Here's your <span class="font-semibold" style="color:var(--pf-primary)">20% off</span> discount code:</p>
+        <p class="text-slate-600 mb-6">Here's your <span class="font-semibold" style="color:var(--pf-primary)">${escapeHtml(rewardLabel)}</span> discount code:</p>
         ${renderCodeCta(code)}
-        <p class="text-slate-500 text-sm mt-6">Use this code at checkout to get 20% off.</p>
+        <p class="text-slate-500 text-sm mt-6">Use this code at checkout to get ${escapeHtml(rewardLabel)}.</p>
       </div>
     `;
     bindCodeCta(code);

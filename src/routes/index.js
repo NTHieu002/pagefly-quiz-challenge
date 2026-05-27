@@ -1,6 +1,7 @@
 const express = require('express');
 const { getQuestionForClient, getFirstQuestionId, totalQuestions, questionIndex } = require('../lib/questions');
-const { startOrGet, hasCompleted } = require('../lib/quiz-state');
+const { startOrGet, hasCompleted, setDiscount, getDiscount } = require('../lib/quiz-state');
+const { matchVariant, defaultDiscount } = require('../lib/discount');
 
 const router = express.Router();
 
@@ -21,6 +22,13 @@ router.get('/', (req, res) => {
     });
   }
 
+  // Bind the reward variant from ?code= to this sid. A known variant wins
+  // (latest entry); a missing/unknown code never clobbers a prior choice. Once
+  // completed the reward is frozen, so a later ?code= can't swap what was earned.
+  const variant = matchVariant(req.query.code);
+  if (variant && !hasCompleted(sid)) setDiscount(sid, variant);
+  const discount = getDiscount(sid) || defaultDiscount();
+
   if (hasCompleted(sid)) {
     return res.render('quiz', {
       sid,
@@ -28,7 +36,8 @@ router.get('/', (req, res) => {
       firstQuestion: null,
       firstIndex: 0,
       alreadyClaimed: true,
-      discountCode: process.env.DISCOUNT_CODE || '',
+      discountCode: discount.code,
+      discountLabel: discount.label,
       shopifyAdminUrl,
     });
   }
@@ -43,6 +52,7 @@ router.get('/', (req, res) => {
     firstIndex: questionIndex(currentId),
     alreadyClaimed: false,
     discountCode: '',
+    discountLabel: discount.label,
     shopifyAdminUrl,
   });
 });

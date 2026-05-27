@@ -14,7 +14,9 @@ const {
   reset,
   markCompleted,
   hasCompleted,
+  getDiscount,
 } = require('../lib/quiz-state');
+const { defaultDiscount } = require('../lib/discount');
 const { fireQuizComplete } = require('../lib/webhook');
 
 const router = express.Router();
@@ -30,10 +32,12 @@ router.post('/answer', (req, res) => {
   }
 
   if (hasCompleted(sid)) {
+    const discount = getDiscount(sid) || defaultDiscount();
     return res.status(409).json({
       error: 'Quiz already completed for this session.',
       alreadyClaimed: true,
-      discountCode: process.env.DISCOUNT_CODE || '',
+      discountCode: discount.code,
+      discountLabel: discount.label,
     });
   }
 
@@ -62,13 +66,14 @@ router.post('/answer', (req, res) => {
   if (isLastQuestion(questionId)) {
     markCompleted(sid);
     advance(sid, questionId);
-    const discountCode = process.env.DISCOUNT_CODE || '';
-    fireQuizComplete({ sid, discountCode });
+    const discount = getDiscount(sid) || defaultDiscount();
+    fireQuizComplete({ sid, discountCode: discount.code });
     return res.json({
       correct: true,
       nextQuestionId: null,
       completed: true,
-      discountCode,
+      discountCode: discount.code,
+      discountLabel: discount.label,
       total: totalQuestions(),
     });
   }
