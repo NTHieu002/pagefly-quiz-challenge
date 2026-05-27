@@ -1,6 +1,6 @@
 # PageFly Quiz Challenge
 
-A small web app that gives PageFly merchants a 20% discount code after they answer 5 questions correctly. Built with Express + EJS + vanilla JS. No database.
+A small web app that gives PageFly merchants a discount code after they answer 5 questions correctly. The default reward is 20% off, with optional richer rewards selected via a `?code=` URL param (see [Reward variants](#reward-variants)). Built with Express + EJS + vanilla JS. No database.
 
 - **Domain:** `quiz-challenge.pagefly.io`
 - **VPS port:** `3001` (other services on the same box: `refund-mcp:3000`, `upsell-mcp:3002`, `manual-mcp:3003`)
@@ -22,14 +22,34 @@ Visit `http://localhost:3001/?sid=test123`.
 | ------------------------------ | --------------------------------------------------------------------- |
 | `PORT`                         | `3001` on the VPS.                                                    |
 | `NODE_ENV`                     | `production` on the VPS.                                              |
-| `DISCOUNT_CODE`                | Shared code shown to every winner, e.g. `PF_START20`.                  |
+| `DISCOUNT_CODE`                | Default 20% reward (no `?code=` param), e.g. `PF_START20`.             |
+| `DISCOUNT_CODE_30`             | Reward for `?code=30` (30% off). Optional; defaults to `PF_GROW30`.    |
+| `DISCOUNT_CODE_U1M`            | Reward for `?code=u1m` (1 month unlimited). Optional; defaults to `PF_YUO5CQQ2`. |
 | `QUIZ_COMPLETE_WEBHOOK_URL`    | n8n webhook fired server-side on completion. Leave blank to disable.  |
 | `QUIZ_COMPLETE_WEBHOOK_SECRET` | Optional; sent as `X-Webhook-Secret` header.                          |
 
+> `DISCOUNT_CODE_30` / `DISCOUNT_CODE_U1M` are optional — the app ships with the codes above as built-in fallbacks. Set them only to override a code without a code change.
+
+## Reward variants
+
+The entry URL accepts an optional `code` query param that selects which reward a winner receives:
+
+| URL                              | Reward             | Code returned          |
+| -------------------------------- | ------------------ | ---------------------- |
+| `/?sid=<sid>`                    | 20% off (default)  | `DISCOUNT_CODE`        |
+| `/?sid=<sid>&code=30`            | 30% off            | `DISCOUNT_CODE_30`     |
+| `/?sid=<sid>&code=u1m`           | 1 month unlimited  | `DISCOUNT_CODE_U1M`    |
+| `/?sid=<sid>&code=<unknown>`     | falls back to 20%  | `DISCOUNT_CODE`        |
+
+- `code` is case-insensitive and combines with `shop`: `/?sid=<sid>&shop=<store>&code=u1m`.
+- The variant is resolved **server-side** and bound to the `sid` at entry — the client can't tamper the `/api/answer` call to request a different reward.
+- The earned reward is **frozen on completion**: re-entering with a different `code` after finishing still shows the originally earned reward.
+- ⚠️ Because `code` lives in the browser URL, a merchant could change `?code=30` → `?code=u1m` **before** completing. This is inherent to "reward chosen by URL param" — to prevent it, have the PageFly app sign the `code` (e.g. HMAC over `sid`). Out of scope for v1.
+
 ## Entry flow
 
-1. PageFly app opens `https://quiz-challenge.pagefly.io/?sid=<SHOP_SESSION_ID>`.
-2. Server reads `sid`, returns the first question. Missing `sid` → error page.
+1. PageFly app opens `https://quiz-challenge.pagefly.io/?sid=<SHOP_SESSION_ID>` (optionally with `&code=<variant>` — see [Reward variants](#reward-variants)).
+2. Server reads `sid`, binds the reward variant to it, and returns the first question. Missing `sid` → error page.
 3. Each answer is POSTed to `/api/answer`; the server validates and returns the next question.
 4. After question 5 is answered correctly, the server marks the `sid` complete, fires the webhook, and returns the discount code.
 5. Re-entering with the same `sid` after completion shows "You've already claimed your discount" with the code re-displayed.
@@ -62,9 +82,12 @@ Response (correct, final):
   "nextQuestionId": null,
   "completed": true,
   "discountCode": "PF_START20",
+  "discountLabel": "20% off",
   "total": 5
 }
 ```
+
+`discountCode` / `discountLabel` reflect the reward variant bound to the `sid` at entry (`PF_GROW30` / `"30% off"`, `PF_YUO5CQQ2` / `"1 month unlimited"`, or the 20% default). The already-claimed `409` response carries the same two fields.
 
 Response (wrong):
 ```json
@@ -84,6 +107,7 @@ The `correctIndex` for any question is **never** sent to the client.
   "event": "quiz-complete"
 }
 ```
+`discountCode` is the code that was actually granted, so it identifies the reward variant (`PF_START20` / `PF_GROW30` / `PF_YUO5CQQ2`).
 
 Fire-and-forget. One retry after 2 seconds, then give up. Failures are logged but never block the user UI.
 
@@ -124,9 +148,13 @@ Fill in:
 PORT=3001
 NODE_ENV=production
 DISCOUNT_CODE=PF_START20
+DISCOUNT_CODE_30=PF_GROW30
+DISCOUNT_CODE_U1M=PF_YUO5CQQ2
 QUIZ_COMPLETE_WEBHOOK_URL=
 QUIZ_COMPLETE_WEBHOOK_SECRET=
 ```
+(`DISCOUNT_CODE_30` / `DISCOUNT_CODE_U1M` are optional — omit to use the built-in defaults shown above.)
+
 Save (`Ctrl+O`, Enter, `Ctrl+X`) and tighten permissions:
 ```bash
 chmod 600 .env
