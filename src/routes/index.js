@@ -29,6 +29,9 @@ router.get('/', (req, res) => {
   if (variant && !hasCompleted(sid)) setDiscount(sid, variant);
   const discount = getDiscount(sid) || defaultDiscount();
 
+  // Some rewards (e.g. u1m) override where the post-claim button sends the user.
+  const rewardRedirectUrl = discount.redirectUrl || null;
+
   if (hasCompleted(sid)) {
     return res.render('quiz', {
       sid,
@@ -39,6 +42,7 @@ router.get('/', (req, res) => {
       discountCode: discount.code,
       discountLabel: discount.label,
       shopifyAdminUrl,
+      rewardRedirectUrl,
     });
   }
 
@@ -54,6 +58,7 @@ router.get('/', (req, res) => {
     discountCode: '',
     discountLabel: discount.label,
     shopifyAdminUrl,
+    rewardRedirectUrl,
   });
 });
 

@@ -240,9 +240,14 @@
     bindCodeCta(code);
   }
 
+  function ctaRedirectUrl() {
+    // A reward-specific redirect (e.g. u1m → App Store) wins over the
+    // shop admin deep-link; falls back to plain copy when neither is set.
+    return state.rewardRedirectUrl || state.shopifyAdminUrl || null;
+  }
+
   function renderCodeCta(code) {
-    const hasShop = !!state.shopifyAdminUrl;
-    const sub = hasShop ? 'Click to copy & back to PageFly →' : 'Click to copy';
+    const sub = ctaRedirectUrl() ? 'Click to copy & back to PageFly →' : 'Click to copy';
     return `
       <div class="flex flex-col items-center">
         <button type="button" id="code-cta" class="code-cta" aria-label="Copy discount code">
@@ -262,9 +267,10 @@
         await navigator.clipboard.writeText(code || '');
       } catch (_) { /* ignore — still navigate */ }
 
-      if (state.shopifyAdminUrl) {
+      const redirectUrl = ctaRedirectUrl();
+      if (redirectUrl) {
         if (sub) sub.textContent = 'Copied! Returning to PageFly…';
-        setTimeout(() => { window.location.href = state.shopifyAdminUrl; }, 450);
+        setTimeout(() => { window.location.href = redirectUrl; }, 450);
       } else if (sub) {
         sub.textContent = 'Copied!';
         setTimeout(() => { sub.textContent = 'Click to copy'; }, 1800);
