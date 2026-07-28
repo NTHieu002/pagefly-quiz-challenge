@@ -87,7 +87,7 @@
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M9 2h6"/></svg>
               ${formatTime(timePerQuestion)}
             </span>
-            <span class="text-xs text-slate-400">Time left</span>
+            <span class="text-xs text-muted-light">Time left</span>
           </div>
           <div class="timer-bar"><div id="timer-fill" class="timer-fill"></div></div>
         </div>
@@ -196,7 +196,7 @@
       <div class="fade-in text-center py-6">
         <div class="text-5xl mb-3">${reason === 'timeout' ? '⏱️' : '😕'}</div>
         <h2 class="text-2xl font-semibold mb-2 tracking-tight">${heading}</h2>
-        <p class="text-slate-600 mb-6">${sub}</p>
+        <p class="text-muted mb-6">${sub}</p>
         <button type="button" id="refresh-btn" class="btn-primary">Refresh to try again</button>
       </div>
     `;
@@ -212,16 +212,16 @@
       <div class="fade-in text-center py-6">
         <div class="text-5xl mb-3 pulse-once">🎉</div>
         <h2 class="text-2xl sm:text-3xl font-bold mb-2 tracking-tight">You did it!</h2>
-        <p class="text-slate-600 mb-6">Here's your <span class="font-semibold" style="color:var(--pf-primary)">${escapeHtml(rewardLabel)}</span> discount code:</p>
+        <p class="text-muted mb-6">Here's your <span class="font-semibold" style="color:var(--pf-secondary)">${escapeHtml(rewardLabel)}</span> discount code:</p>
         ${renderCodeCta(code)}
-        <p class="text-slate-500 text-sm mt-6">Use this code at checkout to get ${escapeHtml(rewardLabel)}.</p>
+        <p class="text-muted text-sm mt-6">Use this code at checkout to get ${escapeHtml(rewardLabel)}.</p>
       </div>
     `;
     bindCodeCta(code);
 
     if (typeof confetti === 'function') {
-      confetti({ particleCount: 140, spread: 80, origin: { y: 0.6 }, colors: ['#4a4cf6', '#6366f1', '#a5b4fc', '#ffffff'] });
-      setTimeout(() => confetti({ particleCount: 90, spread: 100, origin: { y: 0.5 }, colors: ['#4a4cf6', '#818cf8', '#ffffff'] }), 350);
+      confetti({ particleCount: 140, spread: 80, origin: { y: 0.6 }, colors: ['#535af7', '#5f66ff', '#a6acff', '#f0f2ff'] });
+      setTimeout(() => confetti({ particleCount: 90, spread: 100, origin: { y: 0.5 }, colors: ['#535af7', '#a6acff', '#ffffff'] }), 350);
     }
   }
 
@@ -233,7 +233,7 @@
       <div class="fade-in text-center py-6">
         <div class="text-5xl mb-3">✅</div>
         <h2 class="text-2xl font-semibold mb-2 tracking-tight">You've already claimed your discount</h2>
-        <p class="text-slate-600 mb-6">Here's your code again:</p>
+        <p class="text-muted mb-6">Here's your code again:</p>
         ${renderCodeCta(code)}
       </div>
     `;
@@ -289,6 +289,6 @@
   } else if (currentQuestion) {
     renderQuestion(currentQuestion, currentIndex);
   } else {
-    card.innerHTML = '<p class="text-center text-slate-600">Unable to load the quiz.</p>';
+    card.innerHTML = '<p class="text-center text-muted">Unable to load the quiz.</p>';
   }
 })();
