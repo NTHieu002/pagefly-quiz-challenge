@@ -10,7 +10,7 @@ A small web app that gives PageFly merchants a discount code after they answer 5
 
 ```bash
 npm install
-cp .env.example .env   # fill in DISCOUNT_CODE and (optionally) webhook URL
+cp .env.example .env   # fill in DISCOUNT_CODE_DEFAULT and (optionally) webhook URL
 npm run dev
 ```
 
@@ -22,7 +22,7 @@ Visit `http://localhost:3001/?sid=lucky-customer`.
 | ------------------------------ | --------------------------------------------------------------------- |
 | `PORT`                         | `3001` on the VPS.                                                    |
 | `NODE_ENV`                     | `production` on the VPS.                                              |
-| `DISCOUNT_CODE`                | Default 15% reward (no `?code=` param), e.g. `263PLO15-M7P`.             |
+| `DISCOUNT_CODE_DEFAULT`        | Overrides the default 15% reward. Optional — defaults to `263PLO15-M7P`.             |
 | `DISCOUNT_CODE_30`             | Reward for `?code=30` (30% off). Optional; defaults to `PF_GROW30`.    |
 | `DISCOUNT_CODE_U1M`            | Reward for `?code=u1m` (1 month unlimited). Optional; defaults to `PF_YUO5CQQ2`. |
 | `QUIZ_COMPLETE_WEBHOOK_URL`    | n8n webhook fired server-side on completion. Leave blank to disable.  |
@@ -36,10 +36,10 @@ The entry URL accepts an optional `code` query param that selects which reward a
 
 | URL                              | Reward             | Code returned          |
 | -------------------------------- | ------------------ | ---------------------- |
-| `/?sid=<sid>`                    | 15% off (default)  | `DISCOUNT_CODE`        |
+| `/?sid=<sid>`                    | 15% off (default)  | `DISCOUNT_CODE_DEFAULT`|
 | `/?sid=<sid>&code=30`            | 30% off            | `DISCOUNT_CODE_30`     |
 | `/?sid=<sid>&code=u1m`           | 1 month unlimited  | `DISCOUNT_CODE_U1M`    |
-| `/?sid=<sid>&code=<unknown>`     | falls back to 15%  | `DISCOUNT_CODE`        |
+| `/?sid=<sid>&code=<unknown>`     | falls back to 15%  | `DISCOUNT_CODE_DEFAULT`|
 
 - `code` is case-insensitive and combines with `shop`: `/?sid=<sid>&shop=<store>&code=u1m`.
 - The variant is resolved **server-side** and bound to the `sid` at entry — the client can't tamper the `/api/answer` call to request a different reward.
@@ -147,7 +147,7 @@ Fill in:
 ```
 PORT=3001
 NODE_ENV=production
-DISCOUNT_CODE=263PLO15-M7P
+DISCOUNT_CODE_DEFAULT=263PLO15-M7P
 DISCOUNT_CODE_30=PF_GROW30
 DISCOUNT_CODE_U1M=PF_YUO5CQQ2
 QUIZ_COMPLETE_WEBHOOK_URL=
