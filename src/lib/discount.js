@@ -1,5 +1,5 @@
 // Optional `?code=` reward variants.
-// No param (or an unknown value) → the default 20% reward from DISCOUNT_CODE.
+// No param (or an unknown value) → the default 15% reward from DISCOUNT_CODE.
 // Codes are not secret (every winner sees them), so the literals are safe
 // fallbacks here, while env vars allow per-environment overrides.
 const VARIANTS = {
@@ -23,7 +23,7 @@ function matchVariant(codeParam) {
 }
 
 function defaultDiscount() {
-  return { code: process.env.DISCOUNT_CODE || '', label: '20% off', redirectUrl: null };
+  return { code: process.env.DISCOUNT_CODE || '', label: '15% off', redirectUrl: null };
 }
 
 module.exports = { matchVariant, defaultDiscount };

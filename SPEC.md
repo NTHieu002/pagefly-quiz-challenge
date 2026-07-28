@@ -1,7 +1,7 @@
 # PageFly Quiz Challenge - Build Specification
 
 ## Overview
-Build a quiz challenge web app for PageFly merchants. Merchants land on the quiz page from inside the PageFly app, answer 5 questions about PageFly, and if they complete the quiz they receive a discount code. The default reward is 20% off; an optional `?code=` URL param selects richer reward variants (see [Reward Variants](#reward-variants)). A webhook notifies an external n8n workflow when the quiz is completed.
+Build a quiz challenge web app for PageFly merchants. Merchants land on the quiz page from inside the PageFly app, answer 5 questions about PageFly, and if they complete the quiz they receive a discount code. The default reward is 15% off; an optional `?code=` URL param selects richer reward variants (see [Reward Variants](#reward-variants)). A webhook notifies an external n8n workflow when the quiz is completed.
 
 ## Domain & Hosting
 - Domain: `quiz-challenge.pagefly.io` (already pointed to VPS, nginx configured)
@@ -27,16 +27,16 @@ The reward granted on completion is chosen by an optional `code` query param on 
 
 | URL                          | Reward            | Code source         |
 | ---------------------------- | ----------------- | ------------------- |
-| `/?sid=<sid>`                | 20% off (default) | `DISCOUNT_CODE`     |
+| `/?sid=<sid>`                | 15% off (default) | `DISCOUNT_CODE`     |
 | `/?sid=<sid>&code=30`        | 30% off           | `DISCOUNT_CODE_30`  |
 | `/?sid=<sid>&code=u1m`       | 1 month unlimited | `DISCOUNT_CODE_U1M` |
-| `/?sid=<sid>&code=<unknown>` | 20% off (default) | `DISCOUNT_CODE`     |
+| `/?sid=<sid>&code=<unknown>` | 15% off (default) | `DISCOUNT_CODE`     |
 
 Rules:
 - `code` is case-insensitive. A known variant at entry binds the reward to the `sid`; a missing/unknown `code` never clobbers a previously bound variant.
 - Resolution is **server-side only** — the client never sends `code` to `/api/answer`, so it can't tamper the granted reward.
 - The reward is **frozen on completion**: a later entry with a different `code` cannot change what an already-completed `sid` earned.
-- Each variant also carries a display **label** (`"20% off"` / `"30% off"` / `"1 month unlimited"`) shown in the page title, intro, and success screen.
+- Each variant also carries a display **label** (`"15% off"` / `"30% off"` / `"1 month unlimited"`) shown in the page title, intro, and success screen.
 - ⚠️ `code` is visible in the browser URL, so a merchant could swap it before completing. Preventing this (e.g. HMAC-signed `code` from the PageFly app) is out of scope for v1.
 
 ## Quiz Page UX
@@ -56,7 +56,7 @@ Rules:
 - Show success screen: confetti or celebration animation (use `canvas-confetti` library via CDN).
 - Display the discount code prominently in a copy-to-clipboard box.
 - Discount code depends on the reward variant bound to the `sid` (see [Reward Variants](#reward-variants)); the default (no `code`) is the shared `DISCOUNT_CODE` from `.env`.
-- Show short instructions using the variant's label: "Use this code at checkout to get \<label\>." (e.g. "20% off", "1 month unlimited").
+- Show short instructions using the variant's label: "Use this code at checkout to get \<label\>." (e.g. "15% off", "1 month unlimited").
 - Trigger the `quiz-complete` webhook (see below) when this screen renders. Fire-and-forget — do not block UI if webhook fails, but do log errors server-side.
 
 ## Questions (hardcoded in `questions.json`)
@@ -165,8 +165,8 @@ quiz-challenge/
 ```
 PORT=3001
 NODE_ENV=production
-# Default reward (no ?code= param) — 20% off.
-DISCOUNT_CODE=PF_START20
+# Default reward (no ?code= param) — 15% off.
+DISCOUNT_CODE=263PLO15-M7P
 # Optional reward variants selected via ?code=. Omit to use built-in defaults.
 DISCOUNT_CODE_30=PF_GROW30
 DISCOUNT_CODE_U1M=PF_YUO5CQQ2
@@ -246,7 +246,7 @@ Fill in:
 ```
 PORT=3001
 NODE_ENV=production
-DISCOUNT_CODE=PF_START20
+DISCOUNT_CODE=263PLO15-M7P
 DISCOUNT_CODE_30=PF_GROW30
 DISCOUNT_CODE_U1M=PF_YUO5CQQ2
 QUIZ_COMPLETE_WEBHOOK_URL=
@@ -376,7 +376,7 @@ pm2 logs quiz-challenge --lines 50
 - [ ] Answering correctly advances to the next question.
 - [ ] Answering incorrectly ends the quiz with a "refresh to retry" screen.
 - [ ] After 5 correct answers, the discount code appears and webhook fires (if URL configured).
-- [ ] `?code=30` grants `DISCOUNT_CODE_30` ("30% off"); `?code=u1m` grants `DISCOUNT_CODE_U1M` ("1 month unlimited"); no/unknown `code` grants the 20% default.
+- [ ] `?code=30` grants `DISCOUNT_CODE_30` ("30% off"); `?code=u1m` grants `DISCOUNT_CODE_U1M` ("1 month unlimited"); no/unknown `code` grants the 15% default.
 - [ ] The `code` param is resolved server-side; the client cannot change the granted reward via `/api/answer`.
 - [ ] Discount code is **never** present in HTML/JS source until earned.
 - [ ] `correctIndex` values are **never** sent to the browser.
