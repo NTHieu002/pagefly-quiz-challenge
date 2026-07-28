@@ -326,7 +326,7 @@ curl https://quiz-challenge.pagefly.io
 ### Step 9 — Final smoke test
 Open in browser:
 ```
-https://quiz-challenge.pagefly.io/?sid=test-shop-123
+https://quiz-challenge.pagefly.io/?sid=lucky-customer
 ```
 Should show question 1. Answer all 5 correctly → see discount code.
 
@@ -371,7 +371,7 @@ pm2 logs quiz-challenge --lines 50
 | Cert renewal failing | `sudo certbot renew --dry-run`; check port 80 is open |
 
 ## Acceptance Criteria
-- [ ] Visiting `/?sid=test123` shows question 1.
+- [ ] Visiting `/?sid=lucky-customer` shows question 1.
 - [ ] Visiting `/` without `sid` shows the error page.
 - [ ] Answering correctly advances to the next question.
 - [ ] Answering incorrectly ends the quiz with a "refresh to retry" screen.

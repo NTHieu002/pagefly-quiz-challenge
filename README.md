@@ -14,7 +14,7 @@ cp .env.example .env   # fill in DISCOUNT_CODE and (optionally) webhook URL
 npm run dev
 ```
 
-Visit `http://localhost:3001/?sid=test123`.
+Visit `http://localhost:3001/?sid=lucky-customer`.
 
 ## Environment variables (`.env`)
 
@@ -225,7 +225,7 @@ curl https://quiz-challenge.pagefly.io
 ### Step 9 — Final smoke test
 Open in browser:
 ```
-https://quiz-challenge.pagefly.io/?sid=test-shop-123
+https://quiz-challenge.pagefly.io/?sid=lucky-customer
 ```
 Should show question 1. Answer all 5 correctly → you should see the discount code and confetti.
 
