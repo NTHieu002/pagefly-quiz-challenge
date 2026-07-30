@@ -13,6 +13,9 @@
   let timeLeft = timePerQuestion;
   let busy = false;
 
+  const RATING_WEBHOOK_URL = 'https://workflow.bravebits.co/webhook/rating_pf_service';
+  const REDIRECT_SECONDS = 3;
+
   function setProgress(idx) {
     if (idx === null || idx === undefined) {
       progress.style.display = 'none';
@@ -240,41 +243,83 @@
     bindCodeCta(code);
   }
 
-  function ctaRedirectUrl() {
-    // A reward-specific redirect (e.g. u1m → App Store) wins over the
-    // shop admin deep-link; falls back to plain copy when neither is set.
-    return state.rewardRedirectUrl || state.shopifyAdminUrl || null;
+  function ctaRedirect() {
+    // A reward-specific redirect (e.g. u1m → App Store) wins over the shop
+    // pricing deep-link; falls back to plain copy when neither is set.
+    if (state.rewardRedirectUrl) return { url: state.rewardRedirectUrl, label: 'PageFly' };
+    if (state.shopifyPricingUrl) return { url: state.shopifyPricingUrl, label: 'the PageFly pricing page' };
+    return null;
+  }
+
+  // Fire-and-forget rating ping. no-cors keeps it opaque (no preflight, no CORS
+  // error) since we only care that the request leaves the browser.
+  // Reports the campaign token from ?code=, not the discount code on screen —
+  // an unknown ?code= falls back to the default reward, so the two differ.
+  function pingRatingWebhook() {
+    const url = `${RATING_WEBHOOK_URL}?code=${encodeURIComponent(state.urlCode || '')}&type=pro1&option=yes`;
+    try {
+      fetch(url, { method: 'GET', mode: 'no-cors', cache: 'no-store', keepalive: true })
+        .catch(() => { /* ignore — the ping is best-effort */ });
+    } catch (_) { /* ignore */ }
   }
 
   function renderCodeCta(code) {
-    const sub = ctaRedirectUrl() ? 'Click to copy & back to PageFly →' : 'Click to copy';
+    const sub = ctaRedirect() ? 'Click to copy & continue →' : 'Click to copy';
     return `
       <div class="flex flex-col items-center">
         <button type="button" id="code-cta" class="code-cta" aria-label="Copy discount code">
           <span class="code-cta-code">${escapeHtml(code || '')}</span>
           <span class="code-cta-sub" id="code-cta-sub">${sub}</span>
         </button>
+        <p class="code-expiry">This code is valid for <span class="font-semibold">24 hours</span>.</p>
+        <p id="redirect-note" class="redirect-note" aria-live="polite" hidden></p>
       </div>
     `;
+  }
+
+  function startRedirectCountdown(target) {
+    const note = document.getElementById('redirect-note');
+    let left = REDIRECT_SECONDS;
+
+    const paint = () => {
+      if (!note) return;
+      note.hidden = false;
+      note.innerHTML = `Taking you to ${escapeHtml(target.label)} in <span class="countdown-num">${left}</span>s…`;
+    };
+
+    paint();
+    const id = setInterval(() => {
+      left -= 1;
+      paint();
+      if (left <= 0) {
+        clearInterval(id);
+        window.location.href = target.url;
+      }
+    }, 1000);
   }
 
   function bindCodeCta(code) {
     const btn = document.getElementById('code-cta');
     if (!btn) return;
     const sub = document.getElementById('code-cta-sub');
+    let counting = false;
+
     btn.addEventListener('click', async () => {
+      if (counting) return;
       try {
         await navigator.clipboard.writeText(code || '');
-      } catch (_) { /* ignore — still navigate */ }
+      } catch (_) { /* ignore — still ping & navigate */ }
+      if (sub) sub.textContent = 'Copied!';
 
-      const redirectUrl = ctaRedirectUrl();
-      if (redirectUrl) {
-        if (sub) sub.textContent = 'Copied! Returning to PageFly…';
-        setTimeout(() => { window.location.href = redirectUrl; }, 450);
-      } else if (sub) {
-        sub.textContent = 'Copied!';
-        setTimeout(() => { sub.textContent = 'Click to copy'; }, 1800);
+      pingRatingWebhook();
+
+      const target = ctaRedirect();
+      if (!target) {
+        if (sub) setTimeout(() => { sub.textContent = 'Click to copy'; }, 1800);
+        return;
       }
+      counting = true;
+      startRedirectCountdown(target);
     });
   }
 

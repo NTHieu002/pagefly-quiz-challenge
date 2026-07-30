@@ -226,6 +226,28 @@ body {
   letter-spacing: 0.01em;
 }
 
+.code-expiry {
+  margin-top: 0.9rem;
+  font-size: 0.85rem;
+  color: var(--pf-muted);
+}
+
+.redirect-note {
+  margin-top: 0.6rem;
+  font-size: 0.9rem;
+  color: var(--pf-secondary);
+}
+.redirect-note[hidden] { display: none; }
+
+.countdown-num {
+  display: inline-block;
+  min-width: 1.15em;
+  text-align: center;
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 600;
+  color: var(--pf-text);
+}
+
 .card {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
   border: 1px solid var(--pf-border);
