@@ -1,13 +1,14 @@
 // Optional `?code=` reward variants.
 // No param (or an unknown value) → the default 20% reward.
-// Codes are not secret (every winner sees them), so the literals are safe
-// fallbacks here, while env vars allow per-environment overrides.
+// Codes are not secret (every winner sees them), so they live as literals here.
 //
-// The default reward changed from 15% to 20% along with its code. Any box whose
-// env still pins the retired DISCOUNT_CODE_DEFAULT=263PLO15-M7P (or the even
-// older DISCOUNT_CODE) silently outranks the literal below and keeps handing out
-// 15% — update the deployed .env, don't rely on this fallback alone.
-const DEFAULT_REWARD = { env: 'DISCOUNT_CODE_DEFAULT', fallback: '263PLO20-Q2X', label: '20% off' };
+// The default reward is deliberately NOT env-overridable. `.env` is gitignored,
+// so a value set on the deployed box outlives every code change and silently
+// keeps handing out a retired code — that happened twice (PF_START20, then
+// 263PLO15-M7P) and each time the fix was to rename the env var to something
+// production wasn't setting. Editing the constant below and deploying is the
+// whole change: no `.env` edit, no ssh.
+const DEFAULT_REWARD = { code: '263PLO20-Q2X', label: '20% off' };
 
 const VARIANTS = {
   '30': { env: 'DISCOUNT_CODE_30', fallback: 'PF_GROW30', label: '30% off' },
@@ -31,7 +32,7 @@ function matchVariant(codeParam) {
 
 function defaultDiscount() {
   return {
-    code: process.env[DEFAULT_REWARD.env] || DEFAULT_REWARD.fallback,
+    code: DEFAULT_REWARD.code,
     label: DEFAULT_REWARD.label,
     redirectUrl: null,
   };

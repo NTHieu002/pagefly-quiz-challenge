@@ -27,10 +27,10 @@ The reward granted on completion is chosen by an optional `code` query param on 
 
 | URL                          | Reward            | Code source         |
 | ---------------------------- | ----------------- | ------------------- |
-| `/?sid=<sid>`                | 20% off (default) | `DISCOUNT_CODE_DEFAULT` |
+| `/?sid=<sid>`                | 20% off (default) | hardcoded in `src/lib/discount.js` |
 | `/?sid=<sid>&code=30`        | 30% off           | `DISCOUNT_CODE_30`  |
 | `/?sid=<sid>&code=u1m`       | 1 month unlimited | `DISCOUNT_CODE_U1M` |
-| `/?sid=<sid>&code=<unknown>` | 20% off (default) | `DISCOUNT_CODE_DEFAULT` |
+| `/?sid=<sid>&code=<unknown>` | 20% off (default) | hardcoded in `src/lib/discount.js` |
 
 Rules:
 - `code` is case-insensitive. A known variant at entry binds the reward to the `sid`; a missing/unknown `code` never clobbers a previously bound variant.
@@ -55,7 +55,7 @@ Rules:
 ### After All 5 Correct
 - Show success screen: confetti or celebration animation (use `canvas-confetti` library via CDN).
 - Display the discount code prominently in a copy-to-clipboard box.
-- Discount code depends on the reward variant bound to the `sid` (see [Reward Variants](#reward-variants)); the default (no `code`) is the literal in `src/lib/discount.js`, overridable with `DISCOUNT_CODE_DEFAULT`.
+- Discount code depends on the reward variant bound to the `sid` (see [Reward Variants](#reward-variants)); the default (no `code`) is the hardcoded constant in `src/lib/discount.js` — intentionally not env-overridable.
 - Show short instructions using the variant's label: "Use this code at checkout to get \<label\>." (e.g. "20% off", "1 month unlimited").
 - Trigger the `quiz-complete` webhook (see below) when this screen renders. Fire-and-forget — do not block UI if webhook fails, but do log errors server-side.
 
@@ -165,8 +165,6 @@ quiz-challenge/
 ```
 PORT=3001
 NODE_ENV=production
-# Default reward (no ?code= param) — 20% off.
-DISCOUNT_CODE_DEFAULT=263PLO20-Q2X
 # Optional reward variants selected via ?code=. Omit to use built-in defaults.
 DISCOUNT_CODE_30=PF_GROW30
 DISCOUNT_CODE_U1M=PF_YUO5CQQ2
@@ -246,7 +244,6 @@ Fill in:
 ```
 PORT=3001
 NODE_ENV=production
-DISCOUNT_CODE_DEFAULT=263PLO20-Q2X
 DISCOUNT_CODE_30=PF_GROW30
 DISCOUNT_CODE_U1M=PF_YUO5CQQ2
 QUIZ_COMPLETE_WEBHOOK_URL=
