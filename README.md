@@ -1,6 +1,6 @@
 # PageFly Quiz Challenge
 
-A small web app that gives PageFly merchants a discount code after they answer 5 questions correctly. The default reward is 15% off, with optional richer rewards selected via a `?code=` URL param (see [Reward variants](#reward-variants)). Built with Express + EJS + vanilla JS. No database.
+A small web app that gives PageFly merchants a discount code after they answer 5 questions correctly. The default reward is 20% off, with optional richer rewards selected via a `?code=` URL param (see [Reward variants](#reward-variants)). Built with Express + EJS + vanilla JS. No database.
 
 - **Domain:** `quiz-challenge.pagefly.io`
 - **VPS port:** `3001` (other services on the same box: `refund-mcp:3000`, `upsell-mcp:3002`, `manual-mcp:3003`)
@@ -22,7 +22,7 @@ Visit `http://localhost:3001/?sid=lucky-customer`.
 | ------------------------------ | --------------------------------------------------------------------- |
 | `PORT`                         | `3001` on the VPS.                                                    |
 | `NODE_ENV`                     | `production` on the VPS.                                              |
-| `DISCOUNT_CODE_DEFAULT`        | Overrides the default 15% reward. Optional — defaults to `263PLO15-M7P`.             |
+| `DISCOUNT_CODE_DEFAULT`        | Overrides the default 20% reward. Optional — defaults to `263PLO20-Q2X`.             |
 | `DISCOUNT_CODE_30`             | Reward for `?code=30` (30% off). Optional; defaults to `PF_GROW30`.    |
 | `DISCOUNT_CODE_U1M`            | Reward for `?code=u1m` (1 month unlimited). Optional; defaults to `PF_YUO5CQQ2`. |
 | `QUIZ_COMPLETE_WEBHOOK_URL`    | n8n webhook fired server-side on completion. Leave blank to disable.  |
@@ -36,10 +36,10 @@ The entry URL accepts an optional `code` query param that selects which reward a
 
 | URL                              | Reward             | Code returned          |
 | -------------------------------- | ------------------ | ---------------------- |
-| `/?sid=<sid>`                    | 15% off (default)  | `DISCOUNT_CODE_DEFAULT`|
+| `/?sid=<sid>`                    | 20% off (default)  | `DISCOUNT_CODE_DEFAULT`|
 | `/?sid=<sid>&code=30`            | 30% off            | `DISCOUNT_CODE_30`     |
 | `/?sid=<sid>&code=u1m`           | 1 month unlimited  | `DISCOUNT_CODE_U1M`    |
-| `/?sid=<sid>&code=<unknown>`     | falls back to 15%  | `DISCOUNT_CODE_DEFAULT`|
+| `/?sid=<sid>&code=<unknown>`     | falls back to 20%  | `DISCOUNT_CODE_DEFAULT`|
 
 - `code` is case-insensitive and combines with `shop`: `/?sid=<sid>&shop=<store>&code=u1m`.
 - The variant is resolved **server-side** and bound to the `sid` at entry — the client can't tamper the `/api/answer` call to request a different reward.
@@ -81,13 +81,13 @@ Response (correct, final):
   "correct": true,
   "nextQuestionId": null,
   "completed": true,
-  "discountCode": "263PLO15-M7P",
-  "discountLabel": "15% off",
+  "discountCode": "263PLO20-Q2X",
+  "discountLabel": "20% off",
   "total": 5
 }
 ```
 
-`discountCode` / `discountLabel` reflect the reward variant bound to the `sid` at entry (`PF_GROW30` / `"30% off"`, `PF_YUO5CQQ2` / `"1 month unlimited"`, or the 15% default). The already-claimed `409` response carries the same two fields.
+`discountCode` / `discountLabel` reflect the reward variant bound to the `sid` at entry (`PF_GROW30` / `"30% off"`, `PF_YUO5CQQ2` / `"1 month unlimited"`, or the 20% default). The already-claimed `409` response carries the same two fields.
 
 Response (wrong):
 ```json
@@ -103,11 +103,11 @@ The `correctIndex` for any question is **never** sent to the client.
 {
   "sid": "<shop session id>",
   "completedAt": "2026-05-15T10:00:00.000Z",
-  "discountCode": "263PLO15-M7P",
+  "discountCode": "263PLO20-Q2X",
   "event": "quiz-complete"
 }
 ```
-`discountCode` is the code that was actually granted, so it identifies the reward variant (`263PLO15-M7P` / `PF_GROW30` / `PF_YUO5CQQ2`).
+`discountCode` is the code that was actually granted, so it identifies the reward variant (`263PLO20-Q2X` / `PF_GROW30` / `PF_YUO5CQQ2`).
 
 Fire-and-forget. One retry after 2 seconds, then give up. Failures are logged but never block the user UI.
 
@@ -147,7 +147,7 @@ Fill in:
 ```
 PORT=3001
 NODE_ENV=production
-DISCOUNT_CODE_DEFAULT=263PLO15-M7P
+DISCOUNT_CODE_DEFAULT=263PLO20-Q2X
 DISCOUNT_CODE_30=PF_GROW30
 DISCOUNT_CODE_U1M=PF_YUO5CQQ2
 QUIZ_COMPLETE_WEBHOOK_URL=

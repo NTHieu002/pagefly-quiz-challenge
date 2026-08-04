@@ -207,7 +207,7 @@
   }
 
   function renderSuccess(code, label) {
-    const rewardLabel = label || state.discountLabel || '15% off';
+    const rewardLabel = label || state.discountLabel || '20% off';
     stopTimer();
     if (intro) intro.style.display = 'none';
     setProgress(null);

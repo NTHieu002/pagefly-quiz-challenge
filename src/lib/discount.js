@@ -1,13 +1,13 @@
 // Optional `?code=` reward variants.
-// No param (or an unknown value) → the default 15% reward.
+// No param (or an unknown value) → the default 20% reward.
 // Codes are not secret (every winner sees them), so the literals are safe
 // fallbacks here, while env vars allow per-environment overrides.
 //
-// The default reward reads DISCOUNT_CODE_DEFAULT, not the older DISCOUNT_CODE.
-// The reward changed from 20% to 15% along with its code, and deployed boxes
-// still carry the retired 20% value under the old name — an env var set on the
-// server would silently outrank the literal below and hand out the wrong code.
-const DEFAULT_REWARD = { env: 'DISCOUNT_CODE_DEFAULT', fallback: '263PLO15-M7P', label: '15% off' };
+// The default reward changed from 15% to 20% along with its code. Any box whose
+// env still pins the retired DISCOUNT_CODE_DEFAULT=263PLO15-M7P (or the even
+// older DISCOUNT_CODE) silently outranks the literal below and keeps handing out
+// 15% — update the deployed .env, don't rely on this fallback alone.
+const DEFAULT_REWARD = { env: 'DISCOUNT_CODE_DEFAULT', fallback: '263PLO20-Q2X', label: '20% off' };
 
 const VARIANTS = {
   '30': { env: 'DISCOUNT_CODE_30', fallback: 'PF_GROW30', label: '30% off' },

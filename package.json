@@ -1,7 +1,7 @@
 {
   "name": "quiz-challenge",
   "version": "1.0.0",
-  "description": "PageFly Quiz Challenge — merchants earn a 15% discount by answering 5 questions about PageFly.",
+  "description": "PageFly Quiz Challenge — merchants earn a 20% discount by answering 5 questions about PageFly.",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
