@@ -80,7 +80,7 @@ Response (correct, final):
   "correct": true,
   "nextQuestionId": null,
   "completed": true,
-  "discountCode": "264LOGAN20Y-R8M",
+  "discountCode": "264LOGAN20M-T2X",
   "discountLabel": "20% off",
   "total": 5
 }
@@ -102,11 +102,11 @@ The `correctIndex` for any question is **never** sent to the client.
 {
   "sid": "<shop session id>",
   "completedAt": "2026-05-15T10:00:00.000Z",
-  "discountCode": "264LOGAN20Y-R8M",
+  "discountCode": "264LOGAN20M-T2X",
   "event": "quiz-complete"
 }
 ```
-`discountCode` is the code that was actually granted, so it identifies the reward variant (`264LOGAN20Y-R8M` / `PF_GROW30` / `PF_YUO5CQQ2`).
+`discountCode` is the code that was actually granted, so it identifies the reward variant (`264LOGAN20M-T2X` / `PF_GROW30` / `PF_YUO5CQQ2`).
 
 Fire-and-forget. One retry after 2 seconds, then give up. Failures are logged but never block the user UI.
 

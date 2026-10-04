@@ -8,7 +8,7 @@
 // 263PLO15-M7P) and each time the fix was to rename the env var to something
 // production wasn't setting. Editing the constant below and deploying is the
 // whole change: no `.env` edit, no ssh.
-const DEFAULT_REWARD = { code: '264LOGAN20Y-R8M', label: '20% off' };
+const DEFAULT_REWARD = { code: '264LOGAN20M-T2X', label: '20% off' };
 
 const VARIANTS = {
   '30': { env: 'DISCOUNT_CODE_30', fallback: 'PF_GROW30', label: '30% off' },
